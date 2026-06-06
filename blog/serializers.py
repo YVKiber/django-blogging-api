@@ -24,6 +24,7 @@ class PostSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_published",
         ]
+        read_only_fields = ["author", "created_at", "updated_at"]
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +36,4 @@ class CommentSerializer(serializers.ModelSerializer):
             "text",
             "created_at",
         ]
+        read_only_fields = ["created_at"]
