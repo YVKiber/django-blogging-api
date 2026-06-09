@@ -1,0 +1,37 @@
+### Register new user
+POST http://127.0.0.1:8000/api/accounts/register/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "StrongPassword123"
+}
+
+
+### Get JWT token
+POST http://127.0.0.1:8000/api/token/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "StrongPassword123"
+}
+
+
+### Current user
+GET http://127.0.0.1:8000/api/accounts/me/
+Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+
+
+### Create post
+POST http://127.0.0.1:8000/api/posts/
+Content-Type: application/json
+Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+
+{
+  "title": "Post from PyCharm HTTP Client",
+  "content": "This post was created using JWT from PyCharm.",
+  "category": null,
+  "is_published": true
+}
