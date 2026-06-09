@@ -15,19 +15,19 @@ Content-Type: application/json
 
 {
   "username": "testuser",
-  "password": "StrongPassword123"
+  "password": "NewStrongPassword123!"
 }
 
 
 ### Current user
 GET http://127.0.0.1:8000/api/accounts/me/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
+Authorization: Bearer
 
 
 ### Create post
 POST http://127.0.0.1:8000/api/posts/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
+Authorization: Bearer
 
 {
   "title": "Post from PyCharm HTTP Client",
@@ -39,8 +39,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ### Create comment
 POST http://127.0.0.1:8000/api/comments/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
-
+Authorization: Bearer
 
 {
   "post": 5,
@@ -65,4 +64,14 @@ Content-Type: application/json
   "username": "stronguser",
   "email": "stronguser@example.com",
   "password": "StrongPassword123!"
+}
+
+### Change password
+POST http://127.0.0.1:8000/api/accounts/change-password/
+Content-Type: application/json
+Authorization: Bearer
+
+{
+  "old_password": "StrongPassword123",
+  "new_password": "NewStrongPassword123!"
 }

@@ -34,3 +34,21 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email')
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(
+        write_only=True,
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8,
+    )
+    def validate_new_password(self, value):
+        user = self.context["request"].user
+        try:
+            validate_password(value, user=user)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(error.messages)
+
+        return value
+
