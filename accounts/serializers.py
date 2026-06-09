@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError, ValidationError
-
 from rest_framework import serializers
+from .models import UserProfile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -28,6 +28,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             email = validated_data.get('email', ''),
             password = validated_data['password']
         )
+
+        UserProfile.objects.create(user=user)
+
         return user
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,3 +55,31 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         return value
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        source="user.username",
+        read_only=True
+    )
+    email = serializers.EmailField(
+        source="user.email",
+        read_only=True
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            "id",
+            "username",
+            "email",
+            "bio",
+            "location",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "username",
+            "email",
+            "created_at",
+            "updated_at",
+        ]

@@ -21,8 +21,7 @@ Content-Type: application/json
 
 ### Current user
 GET http://127.0.0.1:8000/api/accounts/me/
-Authorization: Bearer
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIyNzA3LCJpYXQiOjE3ODEwMjI0MDcsImp0aSI6ImE1Nzg3YTJmYjBhZTRmMzA4MjljZDNhMWUzNDFlNmVhIiwidXNlcl9pZCI6IjUifQ.QYX0oKTpfpssmqmewFN8GUUDqW2CEz90tKxtqy4ccAU
 
 ### Create post
 POST http://127.0.0.1:8000/api/posts/
@@ -74,4 +73,18 @@ Authorization: Bearer
 {
   "old_password": "StrongPassword123",
   "new_password": "NewStrongPassword123!"
+}
+
+### Get current user profile
+GET http://127.0.0.1:8000/api/accounts/profile/
+Authorization: Bearer
+
+### Update current user profile
+PATCH http://127.0.0.1:8000/api/accounts/profile/
+Content-Type: application/json
+Authorization: Bearer
+
+{
+  "bio": "I am learning Django and Django REST Framework.",
+  "location": "Netherlands"
 }
