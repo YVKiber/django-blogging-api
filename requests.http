@@ -21,17 +21,28 @@ Content-Type: application/json
 
 ### Current user
 GET http://127.0.0.1:8000/api/accounts/me/
-Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
 
 
 ### Create post
 POST http://127.0.0.1:8000/api/posts/
 Content-Type: application/json
-Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
 
 {
   "title": "Post from PyCharm HTTP Client",
   "content": "This post was created using JWT from PyCharm.",
   "category": null,
   "is_published": true
+}
+
+### Create comment
+POST http://127.0.0.1:8000/api/comments/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE2NDM2LCJpYXQiOjE3ODEwMTYxMzYsImp0aSI6ImM5MTZlYmM3ZWE5MTQ3ZmRhMmEyMDBiMWZmODM2MDQ0IiwidXNlcl9pZCI6IjUifQ.wj0LSES9czMRp5SPss8iAf0pQejSKM716-VhBMxgnQg
+
+
+{
+  "post": 5,
+  "text": "This is a comment from authenticated user."
 }
