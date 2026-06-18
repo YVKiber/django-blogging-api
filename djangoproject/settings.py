@@ -41,11 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'blog',
-
-    'accounts',
-
     'django_filters',
+    'drf_spectacular',
+
+    'blog',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -100,6 +100,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 5,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Password validation
@@ -120,6 +121,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Blogging Platform API",
+    "DESCRIPTION": "API for a blogging platform with users, posts, comments, JWT authentication, profiles, search, filtering, and pagination.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 
 # Internationalization
