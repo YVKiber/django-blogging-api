@@ -88,3 +88,27 @@ Authorization: Bearer
   "bio": "I am learning Django and Django REST Framework.",
   "location": "Netherlands"
 }
+
+### Get posts paginated
+GET http://127.0.0.1:8000/api/posts/
+
+### Get posts page 1
+GET http://127.0.0.1:8000/api/posts/?page=1
+
+### Search posts
+GET http://127.0.0.1:8000/api/posts/?search=HTTP
+
+### Order posts by title
+GET http://127.0.0.1:8000/api/posts/?ordering=title
+
+### Order posts by newest
+GET http://127.0.0.1:8000/api/posts/?ordering=-created_at
+
+### Filter posts by published status
+GET http://127.0.0.1:8000/api/posts/?is_published=true
+
+### Filter posts by author
+GET http://127.0.0.1:8000/api/posts/?author=2
+
+### Filter posts by category
+GET http://127.0.0.1:8000/api/posts/?category=1
