@@ -15,3 +15,5 @@ sqlparse==0.5.5
 types-PyYAML==6.0.12.20260518
 typing_extensions==4.15.0
 tzdata==2026.2
+
+drf-spectacular
