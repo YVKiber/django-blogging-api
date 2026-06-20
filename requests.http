@@ -112,3 +112,9 @@ GET http://127.0.0.1:8000/api/posts/?author=2
 
 ### Filter posts by category
 GET http://127.0.0.1:8000/api/posts/?category=1
+
+### Docker API docs
+GET http://127.0.0.1:8000/api/docs/
+
+### Docker posts
+GET http://127.0.0.1:8000/api/posts/
