@@ -32,7 +32,10 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 * Profile update
 * Change password
 * Password validation
-* Email validation during registration
+* Email validation during registration 
+* Like and unlike posts 
+* Likes count for posts 
+* Current user like status
 
 ### Blog Functionality
 
@@ -117,7 +120,7 @@ DjangoProject/
 ### Authentication and Accounts
 
 | Method | Endpoint                         | Description                       |
-| ------ | -------------------------------- | --------------------------------- |
+|--------|----------------------------------|-----------------------------------|
 | POST   | `/api/accounts/register/`        | Register a new user               |
 | POST   | `/api/token/`                    | Get JWT access and refresh tokens |
 | POST   | `/api/token/refresh/`            | Refresh JWT access token          |
@@ -128,18 +131,21 @@ DjangoProject/
 
 ### Posts
 
-| Method | Endpoint           | Description                 |
-| ------ | ------------------ | --------------------------- |
-| GET    | `/api/posts/`      | Get paginated list of posts |
-| POST   | `/api/posts/`      | Create a new post           |
-| GET    | `/api/posts/{id}/` | Get post details            |
-| PATCH  | `/api/posts/{id}/` | Update own post             |
-| DELETE | `/api/posts/{id}/` | Delete own post             |
+| Method | Endpoint                  | Description                 |
+|--------|---------------------------|-----------------------------|
+| GET    | `/api/posts/`             | Get paginated list of posts |
+| POST   | `/api/posts/`             | Create a new post           |
+| POST   | `/api/posts/{id}/like/`   | Add a like to a post        |
+| POST   | `/api/posts/{id}/unlike/` | Delete a like from a post   |
+| GET    | `/api/posts/{id}/`        | Get post details            |
+| PATCH  | `/api/posts/{id}/`        | Update own post             |
+| DELETE | `/api/posts/{id}/`        | Delete own post             |
+
 
 ### Categories
 
 | Method | Endpoint                | Description            |
-| ------ | ----------------------- | ---------------------- |
+|--------|-------------------------|------------------------|
 | GET    | `/api/categories/`      | Get list of categories |
 | POST   | `/api/categories/`      | Create category        |
 | GET    | `/api/categories/{id}/` | Get category details   |
@@ -149,7 +155,7 @@ DjangoProject/
 ### Comments
 
 | Method | Endpoint              | Description          |
-| ------ | --------------------- | -------------------- |
+|--------|-----------------------|----------------------|
 | GET    | `/api/comments/`      | Get list of comments |
 | POST   | `/api/comments/`      | Create a comment     |
 | GET    | `/api/comments/{id}/` | Get comment details  |
@@ -567,6 +573,7 @@ Implemented:
 * Swagger and ReDoc documentation
 * Automated API tests
 * Docker and Docker Compose setup
+* Post likes system
 
 ---
 
@@ -574,7 +581,6 @@ Implemented:
 
 Planned improvements:
 
-* Add likes for posts
 * Add bookmarks or favorites
 * Add user dashboard
 * Add endpoint for current user's posts
