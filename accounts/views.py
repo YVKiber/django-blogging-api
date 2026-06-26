@@ -1,3 +1,5 @@
+from operator import pos
+
 from django.contrib.auth.models import User
 
 from rest_framework import generics
@@ -6,10 +8,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from blog.models import Bookmark, Post
+from blog.models import Bookmark, Post, Comment, Like
 from blog.serializers import BookmarkSerializer, PostSerializer
 from .models import UserProfile
-from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer
+from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer, \
+    UserDashboardSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -85,3 +88,53 @@ class CurrentUserDraftsView(generics.ListAPIView):
             author=self.request.user,
             is_published=False
         ).order_by("-created_at")
+
+class CurrentUserDashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        posts_count = Post.objects.filter(
+            author=user
+        ).count()
+
+        published_posts_count = Post.objects.filter(
+            author=user,
+            is_published=True
+        ).count()
+
+        drafts_count = Post.objects.filter(
+            author=user,
+            is_published=False
+        ).count()
+
+        comments_count = Comment.objects.filter(
+            author=user
+        ).count()
+
+        likes_given_count = Like.objects.filter(
+            user=user
+        ).count()
+
+        likes_received_count = Like.objects.filter(
+            post__author=user,
+        ).count()
+
+        bookmarks_count = Bookmark.objects.filter(
+            user=user
+        ).count()
+
+        data = {
+            "posts_count": posts_count,
+            "published_posts_count": published_posts_count,
+            "drafts_count": drafts_count,
+            "comments_count": comments_count,
+            "likes_given_count": likes_given_count,
+            "likes_received_count": likes_received_count,
+            "bookmarks_count": bookmarks_count,
+        }
+
+        serializer = UserDashboardSerializer(data)
+
+        return Response(serializer.data)

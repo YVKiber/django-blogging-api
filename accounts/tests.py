@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from blog.models import Category, Post, Bookmark
+from blog.models import Category, Post, Bookmark, Like, Comment
 
 
 class AccountsAPITests(APITestCase):
@@ -256,3 +256,45 @@ class AccountsAPITests(APITestCase):
         self.assertNotIn("My published post", returned_titles)
         self.assertNotIn("Other user published post", returned_titles)
         self.assertNotIn("Other user draft post", returned_titles)
+
+
+    def test_current_user_dashboard_requires_authentication(self):
+        response = self.client.get("/api/accounts/me/dashboard/")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_current_user_dashboard_returns_correct_statistics(self):
+        Comment.objects.create(
+            post=self.other_user_published_post,
+            author=self.user,
+            text="This is my comment.",
+        )
+
+        Like.objects.create(
+            user=self.user,
+            post=self.other_user_published_post,
+        )
+
+        Like.objects.create(
+            user=self.other_user,
+            post=self.user_published_post,
+        )
+
+        Bookmark.objects.create(
+            user=self.user,
+            post=self.other_user_published_post,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/accounts/me/dashboard/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data["posts_count"], 2)
+        self.assertEqual(response.data["published_posts_count"], 1)
+        self.assertEqual(response.data["drafts_count"], 1)
+        self.assertEqual(response.data["comments_count"], 1)
+        self.assertEqual(response.data["likes_given_count"], 1)
+        self.assertEqual(response.data["likes_received_count"], 1)
+        self.assertEqual(response.data["bookmarks_count"], 1)

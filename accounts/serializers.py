@@ -83,3 +83,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+class UserDashboardSerializer(serializers.Serializer):
+    posts_count = serializers.IntegerField()
+    published_posts_count = serializers.IntegerField()
+    drafts_count = serializers.IntegerField()
+    comments_count = serializers.IntegerField()
+    likes_given_count = serializers.IntegerField()
+    likes_received_count = serializers.IntegerField()
+    bookmarks_count = serializers.IntegerField()

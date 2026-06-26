@@ -40,6 +40,7 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 * Current user drafts endpoint 
 * Publish and unpublish posts 
 * Draft visibility logic
+* Current user dashboard with activity statistics
 
 ### Blog Functionality
 
@@ -135,6 +136,7 @@ DjangoProject/
 | GET    | `/api/accounts/me/`              | Get current authenticated user    |
 | GET    | `/api/accounts/profile/`         | Get current user profile          |
 | GET    | `/api/accounts/me/posts/`        | Get all of user's posts           |
+| GET    | `/api/accounts/me/dashboard/`    | Get user's dashboard              |
 | GET    | `/api/accounts/me/drafts/`       | Get all of user's drafts          |
 | PATCH  | `/api/accounts/profile/`         | Update current user profile       |
 | POST   | `/api/accounts/change-password/` | Change user password              |
@@ -591,13 +593,13 @@ Implemented:
 * Post likes system 
 * Post bookmarks system
 * Draft and publish system
+* User dashboard statistics endpoint
 ---
 
 ## Future Improvements
 
 Planned improvements:
 
-* Add user dashboard
 * Add endpoint for current user's posts
 * Add image upload for posts
 * Add frontend with Django templates

@@ -168,3 +168,7 @@ Authorization: Bearer
 ### Unpublish post
 POST http://127.0.0.1:8000/api/posts/5/unpublish/
 Authorization: Bearer
+
+### Get current user dashboard
+GET http://127.0.0.1:8000/api/accounts/me/dashboard/
+Authorization: Bearer
