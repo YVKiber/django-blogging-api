@@ -600,7 +600,6 @@ Implemented:
 
 Planned improvements:
 
-* Add endpoint for current user's posts
 * Add image upload for posts
 * Add frontend with Django templates
 * Add production setup with Gunicorn

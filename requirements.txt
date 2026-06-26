@@ -17,3 +17,4 @@ typing_extensions==4.15.0
 tzdata==2026.2
 
 drf-spectacular
+load-dotenv
