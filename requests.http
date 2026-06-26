@@ -21,7 +21,7 @@ Content-Type: application/json
 
 ### Current user
 GET http://127.0.0.1:8000/api/accounts/me/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIyNzA3LCJpYXQiOjE3ODEwMjI0MDcsImp0aSI6ImE1Nzg3YTJmYjBhZTRmMzA4MjljZDNhMWUzNDFlNmVhIiwidXNlcl9pZCI6IjUifQ.QYX0oKTpfpssmqmewFN8GUUDqW2CEz90tKxtqy4ccAU
+Authorization: Bearer
 
 ### Create post
 POST http://127.0.0.1:8000/api/posts/
@@ -121,12 +121,31 @@ GET http://127.0.0.1:8000/api/posts/
 
 ### Like post
 POST http://127.0.0.1:8000/api/posts/4/like/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxOTcyMTc1LCJpYXQiOjE3ODE5NzE4NzUsImp0aSI6IjhkMGZjZDA0ZTY2MzRlY2JiMTY5ZjRkYTI1ODFjNDc5IiwidXNlcl9pZCI6IjUifQ.BtjqLCV43K-lgIeT-R6E3YQbRCCIJOdVL6OpdMErEjw
+Authorization: Bearer
 
 ### Unlike post
 POST http://127.0.0.1:8000/api/posts/4/unlike/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxOTcyMTc1LCJpYXQiOjE3ODE5NzE4NzUsImp0aSI6IjhkMGZjZDA0ZTY2MzRlY2JiMTY5ZjRkYTI1ODFjNDc5IiwidXNlcl9pZCI6IjUifQ.BtjqLCV43K-lgIeT-R6E3YQbRCCIJOdVL6OpdMErEjw
+Authorization: Bearer
 
 ### Get post detail with likes
 GET http://127.0.0.1:8000/api/posts/4/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxOTcyMTc1LCJpYXQiOjE3ODE5NzE4NzUsImp0aSI6IjhkMGZjZDA0ZTY2MzRlY2JiMTY5ZjRkYTI1ODFjNDc5IiwidXNlcl9pZCI6IjUifQ.BtjqLCV43K-lgIeT-R6E3YQbRCCIJOdVL6OpdMErEjw
+Authorization: Bearer
+
+### Bookmark post
+POST http://127.0.0.1:8000/api/posts/4/bookmark/
+Authorization: Bearer
+
+
+### Unbookmark post
+POST http://127.0.0.1:8000/api/posts/4/unbookmark/
+Authorization: Bearer
+
+
+### Get current user bookmarks
+GET http://127.0.0.1:8000/api/accounts/me/bookmarks/
+Authorization: Bearer
+
+
+### Get post detail with bookmark status
+GET http://127.0.0.1:8000/api/posts/4/
+Authorization: Bearer

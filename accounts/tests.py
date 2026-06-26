@@ -3,6 +3,7 @@ from urllib import response
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
+from blog.models import Category, Post, Bookmark
 
 class AccountsAPITests(APITestCase):
     def test_user_registration(self):
@@ -110,3 +111,62 @@ class AccountsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["bio"], "I am learning Django REST Framework.")
         self.assertEqual(response.data["location"], "Netherlands")
+
+    def test_current_user_bookmarks_endpoint_returns_only_user_bookmarks(self):
+        user = User.objects.create_user(
+            username="testuser",
+            email="testuser@example.com",
+            password="StrongPassword123!",
+        )
+        other_user = User.objects.create_user(
+            username="otheruser",
+            email="otheruser@example.com",
+            password="StrongPassword123!",
+        )
+
+        category = Category.objects.create(
+            name="Django"
+        )
+
+        user_post = Post.objects.create(
+            title="User bookmarked post",
+            content="Post bookmarked by testuser.",
+            author=other_user,
+            category=category,
+            is_published=True,
+        )
+
+        other_post = Post.objects.create(
+            title="Other user bookmarked post",
+            content="Post bookmarked by other user.",
+            author=user,
+            category=category,
+            is_published=True,
+        )
+
+        Bookmark.objects.create(
+            user=user,
+            post=user_post
+        )
+
+        Bookmark.objects.create(
+            user=other_user,
+            post=other_post
+        )
+
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get("/api/accounts/me/bookmarks/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        returned_titles = [
+            item["post"]["title"]
+            for item in response.data["results"]
+        ] if "results" in response.data else [
+            item["post"]["title"]
+            for item in response.data
+        ]
+
+        self.assertIn("User bookmarked post", returned_titles)
+        self.assertNotIn("Other user bookmarked post", returned_titles)

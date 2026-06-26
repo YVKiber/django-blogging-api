@@ -1,8 +1,10 @@
+from urllib import response
+
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Post, Category, Comment, Like
+from .models import Post, Category, Comment, Like, Bookmark
 
 
 class BlogAPITests(APITestCase):
@@ -265,3 +267,108 @@ class BlogAPITests(APITestCase):
         self.assertFalse(response.data["is_liked"])
 
 
+    def test_authenticated_user_can_bookmark_post(self):
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.post(f"/api/posts/{self.post.id}/bookmark/",format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Bookmark.objects.filter(
+                post=self.post,
+                user=self.other_user,
+            ).exists()
+        )
+
+    def test_user_cannot_bookmark_same_post_twice(self):
+        self.client.force_authenticate(user=self.other_user)
+
+        first_response = self.client.post(
+            f"/api/posts/{self.post.id}/bookmark/",
+            format="json",
+        )
+
+        second_response = self.client.post(
+            f"/api/posts/{self.post.id}/bookmark/",
+            format="json",
+        )
+
+        self.assertEqual(first_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(second_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            Bookmark.objects.filter(
+                user=self.other_user,
+                post=self.post
+            ).count(),
+            1
+        )
+
+    def test_authenticated_user_can_unbookmark_post(self):
+        Bookmark.objects.create(
+            user=self.other_user,
+            post=self.post
+        )
+
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.post(f"/api/posts/{self.post.id}/unbookmark/",format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(
+            Bookmark.objects.filter(
+                user=self.other_user,
+                post=self.post
+            ).exists()
+        )
+
+    def test_anonymous_user_cannot_bookmark_post(self):
+        response = self.client.post(f"/api/posts/{self.post.id}/bookmark/",format="json")
+
+        self.assertIn(
+            response.status_code,
+            [
+                status.HTTP_401_UNAUTHORIZED,
+                status.HTTP_403_FORBIDDEN,
+            ]
+        )
+
+        self.assertFalse(
+            Bookmark.objects.filter(
+                post=self.post,
+            ).exists()
+        )
+
+    def test_post_detail_includes_bookmarks_count(self):
+        Bookmark.objects.create(
+            user=self.other_user,
+            post=self.post
+        )
+
+        response = self.client.get(f"/api/posts/{self.post.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("bookmarks_count", response.data)
+        self.assertEqual(response.data["bookmarks_count"], 1)
+
+    def test_post_detail_shows_is_bookmarked_true_for_bookmarked_post(self):
+        Bookmark.objects.create(
+            user=self.other_user,
+            post=self.post
+        )
+
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.get(f"/api/posts/{self.post.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("is_bookmarked", response.data)
+        self.assertTrue(response.data["is_bookmarked"])
+
+    def test_post_detail_shows_is_bookmarked_false_for_not_bookmarked_post(self):
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.get(f"/api/posts/{self.post.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("is_bookmarked", response.data)
+        self.assertFalse(response.data["is_bookmarked"])

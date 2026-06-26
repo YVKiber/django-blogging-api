@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
-from .models import Category, Post, Comment, Like
+from .models import Category, Post, Comment, Like, Bookmark
 from .permissions import IsAuthorOrReadOnly
 from .serializers import CategorySerializer, PostSerializer, CommentSerializer
 
@@ -91,6 +91,46 @@ class PostViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated],
+    )
+    def bookmark(self, request, pk=None):
+        post = self.get_object()
+
+        bookmark, created = Bookmark.objects.get_or_create(user=request.user, post=post)
+
+        if not created:
+            return Response(
+                {"detail": "You have already bookmarked this post."},
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"detail": "Post bookmarked successfully."},
+            status=status.HTTP_201_CREATED
+        )
+
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated],
+    )
+    def unbookmark(self, request, pk=None):
+        post = self.get_object()
+
+        deleted_count, _ = Bookmark.objects.filter(user=request.user, post=post).delete()
+
+        if deleted_count == 0:
+            return Response(
+                {"detail": "You have not bookmarked this post yet."},
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            {"detail": "Post removed from bookmarks successfully."},
+            status=status.HTTP_200_OK
+        )
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')

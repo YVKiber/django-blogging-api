@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from blog.models import Bookmark
+from blog.serializers import BookmarkSerializer
 from .models import UserProfile
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer
 
@@ -51,3 +53,16 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             user=self.request.user
         )
         return profile
+
+class CurrentUserBookmarksView(generics.ListAPIView):
+    serializer_class = BookmarkSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(
+            user=self.request.user
+        ).select_related(
+            "post",
+            "post__author",
+            "post__category",
+        )

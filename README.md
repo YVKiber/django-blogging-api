@@ -73,6 +73,10 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 * Docker Compose setup
 * Automatic database migrations on container startup
 
+### Markdown
+* Bookmark and unbookmark posts 
+* Current user bookmarks endpoint 
+* Bookmark count and bookmark status for posts
 ---
 
 ## Project Structure
@@ -131,15 +135,18 @@ DjangoProject/
 
 ### Posts
 
-| Method | Endpoint                  | Description                 |
-|--------|---------------------------|-----------------------------|
-| GET    | `/api/posts/`             | Get paginated list of posts |
-| POST   | `/api/posts/`             | Create a new post           |
-| POST   | `/api/posts/{id}/like/`   | Add a like to a post        |
-| POST   | `/api/posts/{id}/unlike/` | Delete a like from a post   |
-| GET    | `/api/posts/{id}/`        | Get post details            |
-| PATCH  | `/api/posts/{id}/`        | Update own post             |
-| DELETE | `/api/posts/{id}/`        | Delete own post             |
+| Method | Endpoint                      | Description                   |
+|--------|-------------------------------|-------------------------------|
+| GET    | `/api/posts/`                 | Get paginated list of posts   |
+| POST   | `/api/posts/`                 | Create a new post             |
+| POST   | `/api/posts/{id}/like/`       | Add a like to a post          |
+| POST   | `/api/posts/{id}/unlike/`     | Delete a like from a post     |
+| POST   | `/api/posts/{id}/bookmark/`   | Add a bookmark to a post      |
+| POST   | `/api/posts/{id}/unbookmark/` | Delete a bookmark from a post |
+| GET    | `/api/accounts/me/bookmarks/` | Get user's bookmarks          |
+| GET    | `/api/posts/{id}/`            | Get post details              |
+| PATCH  | `/api/posts/{id}/`            | Update own post               |
+| DELETE | `/api/posts/{id}/`            | Delete own post               |
 
 
 ### Categories
@@ -573,15 +580,14 @@ Implemented:
 * Swagger and ReDoc documentation
 * Automated API tests
 * Docker and Docker Compose setup
-* Post likes system
-
+* Post likes system 
+* Post bookmarks system
 ---
 
 ## Future Improvements
 
 Planned improvements:
 
-* Add bookmarks or favorites
 * Add user dashboard
 * Add endpoint for current user's posts
 * Add image upload for posts
