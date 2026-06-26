@@ -1,5 +1,6 @@
 from argparse import Action
 
+from django.db.models import Q
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -16,7 +17,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
@@ -45,6 +45,18 @@ class PostViewSet(viewsets.ModelViewSet):
     ]
 
     ordering = ['-created_at',]
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_authenticated:
+            return Post.objects.filter(
+                Q(is_published=True) | Q(author=user)
+            ).distinct().order_by("-created_at")
+
+        return Post.objects.filter(
+            is_published=True
+        ).order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -132,6 +144,49 @@ class PostViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated],
+    )
+    def publish(self, request, pk=None):
+        post = self.get_object()
+
+        if post.author != request.user:
+            return Response(
+                {"detail": "You do not have permission to publish this post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        post.is_published = True
+        post.save(update_fields=["is_published", "updated_at"])
+
+        return Response(
+            {"detail": "Post published successfully."},
+            status=status.HTTP_200_OK
+        )
+
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated],
+    )
+    def unpublish(self, request, pk=None):
+        post = self.get_object()
+
+        if post.author != request.user:
+            return Response(
+                {"detail": "You do not have permission to unpublish this post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        post.is_published = False
+        post.save(update_fields=["is_published", "updated_at"])
+
+        return Response(
+            {"detail": "Post unpublished successfully."},
+            status=status.HTTP_200_OK
+        )
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer

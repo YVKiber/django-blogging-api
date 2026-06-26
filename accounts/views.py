@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from blog.models import Bookmark
-from blog.serializers import BookmarkSerializer
+from blog.models import Bookmark, Post
+from blog.serializers import BookmarkSerializer, PostSerializer
 from .models import UserProfile
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer
 
@@ -66,3 +66,22 @@ class CurrentUserBookmarksView(generics.ListAPIView):
             "post__author",
             "post__category",
         )
+
+class CurrentUserPostsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user
+        ).order_by("-created_at")
+
+class CurrentUserDraftsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user,
+            is_published=False
+        ).order_by("-created_at")

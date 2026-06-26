@@ -36,6 +36,10 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 * Like and unlike posts 
 * Likes count for posts 
 * Current user like status
+* Current user posts endpoint 
+* Current user drafts endpoint 
+* Publish and unpublish posts 
+* Draft visibility logic
 
 ### Blog Functionality
 
@@ -130,6 +134,8 @@ DjangoProject/
 | POST   | `/api/token/refresh/`            | Refresh JWT access token          |
 | GET    | `/api/accounts/me/`              | Get current authenticated user    |
 | GET    | `/api/accounts/profile/`         | Get current user profile          |
+| GET    | `/api/accounts/me/posts/`        | Get all of user's posts           |
+| GET    | `/api/accounts/me/drafts/`       | Get all of user's drafts          |
 | PATCH  | `/api/accounts/profile/`         | Update current user profile       |
 | POST   | `/api/accounts/change-password/` | Change user password              |
 
@@ -143,6 +149,8 @@ DjangoProject/
 | POST   | `/api/posts/{id}/unlike/`     | Delete a like from a post     |
 | POST   | `/api/posts/{id}/bookmark/`   | Add a bookmark to a post      |
 | POST   | `/api/posts/{id}/unbookmark/` | Delete a bookmark from a post |
+| POST   | `/api/posts/{id}/publish/`    | Publish post                  |
+| POST   | `/api/posts/{id}/unpublish/`  | Unpublish post                |
 | GET    | `/api/accounts/me/bookmarks/` | Get user's bookmarks          |
 | GET    | `/api/posts/{id}/`            | Get post details              |
 | PATCH  | `/api/posts/{id}/`            | Update own post               |
@@ -582,6 +590,7 @@ Implemented:
 * Docker and Docker Compose setup
 * Post likes system 
 * Post bookmarks system
+* Draft and publish system
 ---
 
 ## Future Improvements

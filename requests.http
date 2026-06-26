@@ -149,3 +149,22 @@ Authorization: Bearer
 ### Get post detail with bookmark status
 GET http://127.0.0.1:8000/api/posts/4/
 Authorization: Bearer
+
+### Get my posts
+GET http://127.0.0.1:8000/api/accounts/me/posts/
+Authorization: Bearer
+
+
+### Get my drafts
+GET http://127.0.0.1:8000/api/accounts/me/drafts/
+Authorization: Bearer
+
+
+### Publish post
+POST http://127.0.0.1:8000/api/posts/5/publish/
+Authorization: Bearer
+
+
+### Unpublish post
+POST http://127.0.0.1:8000/api/posts/5/unpublish/
+Authorization: Bearer

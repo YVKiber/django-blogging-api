@@ -1,5 +1,3 @@
-from urllib import response
-
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -28,6 +26,13 @@ class BlogAPITests(APITestCase):
             author=self.user,
             category=self.category,
             is_published=True,
+        )
+        self.draft_post = Post.objects.create(
+            title="Draft post",
+            content="This is a draft.",
+            author=self.user,
+            category=self.category,
+            is_published=False,
         )
 
     def test_posts_list_is_public(self):
@@ -372,3 +377,95 @@ class BlogAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("is_bookmarked", response.data)
         self.assertFalse(response.data["is_bookmarked"])
+
+    def test_anonymous_user_sees_only_published_posts(self):
+        response = self.client.get("/api/posts/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        posts = response.data["results"] if "results" in response.data else response.data
+
+        returned_titles = [
+            post["title"]
+            for post in posts
+        ]
+
+        self.assertIn("Existing post", returned_titles)
+        self.assertNotIn("Draft post", returned_titles)
+
+    def test_author_can_see_own_draft_in_posts_list(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get("/api/posts/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        posts = response.data["results"] if "results" in response.data else response.data
+
+        returned_titles = [
+            post["title"]
+            for post in posts
+        ]
+
+        self.assertIn("Draft post", returned_titles)
+
+    def test_other_user_cannot_see_another_users_draft(self):
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.get("/api/posts/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        posts = response.data["results"] if "results" in response.data else response.data
+
+        returned_titles = [
+            post["title"]
+            for post in posts
+        ]
+
+        self.assertNotIn("My draft", returned_titles)
+
+    def test_author_can_publish_own_post(self):
+        draft = Post.objects.create(
+            title="Draft to publish",
+            content="This draft should become published.",
+            author=self.user,
+            category=self.category,
+            is_published=False,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"/api/posts/{draft.id}/publish/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        draft.refresh_from_db()
+        self.assertTrue(draft.is_published)
+
+    def test_author_can_unpublish_own_post(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"/api/posts/{self.post.id}/unpublish/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.post.refresh_from_db()
+        self.assertFalse(self.post.is_published)
+
+    def test_other_user_cannot_unpublish_another_users_post(self):
+        self.client.force_authenticate(user=self.other_user)
+
+        response = self.client.post(
+            f"/api/posts/{self.post.id}/unpublish/",
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.post.refresh_from_db()
+        self.assertTrue(self.post.is_published)
