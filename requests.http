@@ -135,16 +135,13 @@ Authorization: Bearer
 POST http://127.0.0.1:8000/api/posts/4/bookmark/
 Authorization: Bearer
 
-
 ### Unbookmark post
 POST http://127.0.0.1:8000/api/posts/4/unbookmark/
 Authorization: Bearer
 
-
 ### Get current user bookmarks
 GET http://127.0.0.1:8000/api/accounts/me/bookmarks/
 Authorization: Bearer
-
 
 ### Get post detail with bookmark status
 GET http://127.0.0.1:8000/api/posts/4/
@@ -154,16 +151,13 @@ Authorization: Bearer
 GET http://127.0.0.1:8000/api/accounts/me/posts/
 Authorization: Bearer
 
-
 ### Get my drafts
 GET http://127.0.0.1:8000/api/accounts/me/drafts/
 Authorization: Bearer
 
-
 ### Publish post
 POST http://127.0.0.1:8000/api/posts/5/publish/
 Authorization: Bearer
-
 
 ### Unpublish post
 POST http://127.0.0.1:8000/api/posts/5/unpublish/
@@ -172,3 +166,43 @@ Authorization: Bearer
 ### Get current user dashboard
 GET http://127.0.0.1:8000/api/accounts/me/dashboard/
 Authorization: Bearer
+
+### Create post with image
+POST http://127.0.0.1:8000/api/posts/
+Authorization: Bearer
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="title"
+
+Post with image
+--WebAppBoundary
+Content-Disposition: form-data; name="content"
+
+This post contains an uploaded image.
+--WebAppBoundary
+Content-Disposition: form-data; name="category"
+
+1
+--WebAppBoundary
+Content-Disposition: form-data; name="is_published"
+
+true
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="test-image.jpg"
+Content-Type: image/jpeg
+
+< ./test-image.jpg
+--WebAppBoundary--
+
+### Update post image
+PATCH http://127.0.0.1:8000/api/posts/7/
+Authorization: Bearer
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="test-image.jpg"
+Content-Type: image/jpeg
+
+< ./test-image.jpg
+--WebAppBoundary--

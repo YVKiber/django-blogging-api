@@ -52,6 +52,7 @@ The CI pipeline:
 * Publish and unpublish posts 
 * Draft visibility logic
 * Current user dashboard with activity statistics
+* Image upload for posts
 
 ### Blog Functionality
 
@@ -74,6 +75,7 @@ The CI pipeline:
 * Search by post title, content, and author username
 * Filtering by category, author, and publication status
 * Ordering by title, creation date, and update date
+* Posts support optional image upload using multipart/form-data.
 
 ### Documentation and Testing
 
@@ -611,7 +613,6 @@ Implemented:
 
 Planned improvements:
 
-* Add image upload for posts
 * Add frontend with Django templates
 * Add production setup with Gunicorn
 * Add deployment configuration

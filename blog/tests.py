@@ -3,7 +3,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Post, Category, Comment, Like, Bookmark
-
+from io import BytesIO
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class BlogAPITests(APITestCase):
     def setUp(self):
@@ -469,3 +471,37 @@ class BlogAPITests(APITestCase):
 
         self.post.refresh_from_db()
         self.assertTrue(self.post.is_published)
+
+    def generate_test_image(self):
+        file = BytesIO()
+        image = Image.new("RGB", (100, 100), color="white")
+        image.save(file, "JPEG")
+        file.seek(0)
+
+        return SimpleUploadedFile(
+            name="test-image.jpg",
+            content=file.read(),
+            content_type="image/jpeg",
+        )
+
+    def test_authenticated_user_can_create_post_with_image(self):
+        self.client.force_authenticate(user=self.user)
+
+        image = self.generate_test_image()
+
+        response = self.client.post(
+            "/api/posts/",
+            {
+                "title": "Post with image",
+                "content": "This post contains an uploaded image.",
+                "category": self.category.id,
+                "is_published": True,
+                "image": image,
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["title"], "Post with image")
+        self.assertIn("image", response.data)
+        self.assertIsNotNone(response.data["image"])
