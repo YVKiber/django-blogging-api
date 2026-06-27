@@ -102,8 +102,27 @@ The CI pipeline:
 * Run production-like environment:
     ```bash
   docker compose -f docker-compose.prod.yml up --build
+  
 ---
 
+#№# Deployment Configuration
+
+The project includes deployment-ready configuration for production-like environments.
+
+Deployment-related features:
+* Gunicorn WSGI server
+* production Docker Compose configuration 
+* environment-based settings 
+* PostgreSQL production service 
+* static files collection 
+* media files volume 
+* health check endpoint 
+* security-related environment variables
+
+Health check endpoint:
+
+```http
+GET /api/health/
 ## Project Structure
 
 ```text
@@ -142,6 +161,19 @@ DjangoProject/
 └── README.md
 ```
 
+Example response:
+JSON
+```
+{
+  "status": "ok",
+  "service": "django-blogging-api"
+}
+```
+
+Production-like Docker run:
+```
+docker compose -f docker-compose.prod.yml up --build
+```
 ---
 
 ## API Endpoints
@@ -619,9 +651,9 @@ Implemented:
 ## Future Improvements
 
 Planned improvements:
-
+* Add email verification and password reset
 * Add frontend with Django templates
-* Add deployment configuration
+
 ---
 
 ## Author
