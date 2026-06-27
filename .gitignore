@@ -20,10 +20,12 @@ media/
 # Environment variables
 .env
 .env.docker
+.env.production
 
 # OS files
 .DS_Store
 Thumbs.db
 
 # Media files
+staticfiles/
 .media/

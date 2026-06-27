@@ -17,6 +17,8 @@ RUN pip install --upgrade pip \
 COPY . .
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY entrypoint.prod.sh /entrypoint.prod.sh
+
+RUN chmod +x /entrypoint.sh /entrypoint.prod.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

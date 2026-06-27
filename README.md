@@ -17,6 +17,8 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 * drf-spectacular
 * Docker
 * Docker Compose
+* Gunicorn production WSGI server
+* Production-like Docker Compose setup
 
 ---
 
@@ -61,6 +63,9 @@ The CI pipeline:
 * Create, read, update, and delete comments
 * Automatic assignment of post author
 * Automatic assignment of comment author
+* Bookmark and unbookmark posts 
+* Current user bookmarks endpoint 
+* Bookmark count and bookmark status for posts
 
 ### Permissions
 
@@ -91,10 +96,12 @@ The CI pipeline:
 * Docker Compose setup
 * Automatic database migrations on container startup
 
-### Markdown
-* Bookmark and unbookmark posts 
-* Current user bookmarks endpoint 
-* Bookmark count and bookmark status for posts
+### Production-like Docker Setup
+
+* The project includes a production-like Docker Compose configuration using Gunicorn. 
+* Run production-like environment:
+    ```bash
+  docker compose -f docker-compose.prod.yml up --build
 ---
 
 ## Project Structure
@@ -614,7 +621,6 @@ Implemented:
 Planned improvements:
 
 * Add frontend with Django templates
-* Add production setup with Gunicorn
 * Add deployment configuration
 ---
 
