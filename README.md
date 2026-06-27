@@ -20,6 +20,17 @@ The project includes user registration, JWT login, user profiles, blog posts, ca
 
 ---
 
+## Continuous Integration
+
+This project uses GitHub Actions to automatically run Django tests on every push and pull request.
+
+The CI pipeline:
+- sets up Python 3.12
+- starts PostgreSQL 16
+- installs project dependencies
+- runs database migrations
+- runs the Django test suite
+---
 ## Features
 
 ### Authentication and Users
@@ -604,8 +615,6 @@ Planned improvements:
 * Add frontend with Django templates
 * Add production setup with Gunicorn
 * Add deployment configuration
-* Add CI pipeline for automated tests
-
 ---
 
 ## Author
