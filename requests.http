@@ -206,3 +206,21 @@ Content-Type: image/jpeg
 
 < ./test-image.jpg
 --WebAppBoundary--
+
+### Request password reset
+POST http://127.0.0.1:8000/api/accounts/password-reset/
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com"
+}
+
+### Confirm password reset
+POST http://127.0.0.1:8000/api/accounts/password-reset-confirm/
+Content-Type: application/json
+
+{
+  "uid": "PASTE_UID_HERE",
+  "token": "PASTE_TOKEN_HERE",
+  "new_password": "NewStrongPassword123!"
+}

@@ -1,7 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
-
+from django.contrib.auth.tokens import default_token_generator
+from django.core import mail
+from django.test import override_settings
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from blog.models import Category, Post, Bookmark, Like, Comment
 
 
@@ -298,3 +302,86 @@ class AccountsAPITests(APITestCase):
         self.assertEqual(response.data["likes_given_count"], 1)
         self.assertEqual(response.data["likes_received_count"], 1)
         self.assertEqual(response.data["bookmarks_count"], 1)
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        FRONTEND_BASE_URL="http://frontend.test",
+    )
+    def test_password_reset_request_sends_email_for_existing_user(self):
+        response = self.client.post(
+            "/api/accounts/password-reset/",
+            {
+                "email": "testuser@example.com",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Password reset request", mail.outbox[0].subject)
+        self.assertIn("http://frontend.test/password-reset-confirm", mail.outbox[0].body)
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        FRONTEND_BASE_URL="http://frontend.test",
+    )
+    def test_password_reset_request_with_unknown_email_returns_ok(self):
+        response = self.client.post(
+            "/api/accounts/password-reset/",
+            {
+                "email": "unknown@example.com",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertIn("detail", response.data)
+
+    def test_password_reset_confirm_changes_password(self):
+        uid = urlsafe_base64_encode(
+            force_bytes(self.user.pk)
+        )
+
+        token = default_token_generator.make_token(
+            self.user
+        )
+
+        response = self.client.post(
+            "/api/accounts/password-reset-confirm/",
+            {
+                "uid": uid,
+                "token": token,
+                "new_password": "NewStrongPassword123!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertTrue(
+            self.user.check_password("NewStrongPassword123!")
+        )
+
+    def test_password_reset_confirm_with_invalid_token_fails(self):
+        uid = urlsafe_base64_encode(
+            force_bytes(self.user.pk)
+        )
+
+        response = self.client.post(
+            "/api/accounts/password-reset-confirm/",
+            {
+                "uid": uid,
+                "token": "invalid-token",
+                "new_password": "NewStrongPassword123!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.user.refresh_from_db()
+        self.assertTrue(
+            self.user.check_password("StrongPassword123!")
+        )

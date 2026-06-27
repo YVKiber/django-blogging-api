@@ -55,6 +55,8 @@ The CI pipeline:
 * Draft visibility logic
 * Current user dashboard with activity statistics
 * Image upload for posts
+* Password reset via email
+* SMTP-based email configuration
 
 ### Blog Functionality
 
@@ -105,7 +107,7 @@ The CI pipeline:
   
 ---
 
-#№# Deployment Configuration
+### Deployment Configuration
 
 The project includes deployment-ready configuration for production-like environments.
 
@@ -180,18 +182,20 @@ docker compose -f docker-compose.prod.yml up --build
 
 ### Authentication and Accounts
 
-| Method | Endpoint                         | Description                       |
-|--------|----------------------------------|-----------------------------------|
-| POST   | `/api/accounts/register/`        | Register a new user               |
-| POST   | `/api/token/`                    | Get JWT access and refresh tokens |
-| POST   | `/api/token/refresh/`            | Refresh JWT access token          |
-| GET    | `/api/accounts/me/`              | Get current authenticated user    |
-| GET    | `/api/accounts/profile/`         | Get current user profile          |
-| GET    | `/api/accounts/me/posts/`        | Get all of user's posts           |
-| GET    | `/api/accounts/me/dashboard/`    | Get user's dashboard              |
-| GET    | `/api/accounts/me/drafts/`       | Get all of user's drafts          |
-| PATCH  | `/api/accounts/profile/`         | Update current user profile       |
-| POST   | `/api/accounts/change-password/` | Change user password              |
+| Method | Endpoint                                | Description                       |
+|--------|-----------------------------------------|-----------------------------------|
+| POST   | `/api/accounts/register/`               | Register a new user               |
+| POST   | `/api/token/`                           | Get JWT access and refresh tokens |
+| POST   | `/api/token/refresh/`                   | Refresh JWT access token          |
+| POST   | `/api/accounts/password-reset/`         | Password reset request            |
+| POST   | `/api/accounts/password-reset-confirm/` | Password reset confirm            |
+| GET    | `/api/accounts/me/`                     | Get current authenticated user    |
+| GET    | `/api/accounts/profile/`                | Get current user profile          |
+| GET    | `/api/accounts/me/posts/`               | Get all of user's posts           |
+| GET    | `/api/accounts/me/dashboard/`           | Get user's dashboard              |
+| GET    | `/api/accounts/me/drafts/`              | Get all of user's drafts          |
+| PATCH  | `/api/accounts/profile/`                | Update current user profile       |
+| POST   | `/api/accounts/change-password/`        | Change user password              |
 
 ### Posts
 
@@ -322,6 +326,16 @@ DB_USER=postgres
 DB_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
+
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+EMAIL_HOST_USER=your-email@example.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=your-email@example.com
+FRONTEND_BASE_URL=http://127.0.0.1:8000
 ```
 
 For local Windows/PyCharm development:
@@ -651,7 +665,7 @@ Implemented:
 ## Future Improvements
 
 Planned improvements:
-* Add email verification and password reset
+* Add email verification
 * Add frontend with Django templates
 
 ---

@@ -12,7 +12,7 @@ from blog.models import Bookmark, Post, Comment, Like
 from blog.serializers import BookmarkSerializer, PostSerializer
 from .models import UserProfile
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer, \
-    UserDashboardSerializer
+    UserDashboardSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -138,3 +138,47 @@ class CurrentUserDashboardView(APIView):
         serializer = UserDashboardSerializer(data)
 
         return Response(serializer.data)
+
+class PasswordResetRequestView(generics.GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "detail": "If an account with this email exists, a password reset email has been sent."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "detail": "Password has been reset successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
