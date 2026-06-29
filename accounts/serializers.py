@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from rest_framework import serializers
+from rest_framework import serializers, generics
 
 from django.conf import settings
 from .models import UserProfile
@@ -21,6 +21,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password')
+        read_only_fields = ['id']
 
     def validate_password(self, value):
         try:
@@ -34,11 +35,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username = validated_data['username'],
             email = validated_data.get('email', ''),
-            password = validated_data['password']
+            password = validated_data['password'],
+            is_active = False,
         )
-
         UserProfile.objects.create(user=user)
-
+        send_verification_email(user)
         return user
 
 class UserSerializer(serializers.ModelSerializer):
@@ -198,3 +199,103 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         user.set_password(new_password)
         user.save(update_fields=["password"])
+
+def send_verification_email(user):
+    uid = urlsafe_base64_encode(
+        force_bytes(str(user.pk))
+    )
+
+    token = default_token_generator.make_token(user)
+
+    verification_link = (
+        f"{settings.FRONTEND_BASE_URL}"
+        f"/verify-email"
+        f"?uid={uid}&token={token}"
+    )
+
+    subject = "Verify your email address"
+
+    message = (
+        "Hello,\n\n"
+        "Thank you for registering in Django Blogging API.\n\n"
+        f"Verification link:\n{verification_link}\n\n"
+        "For API testing, use these values:\n"
+        f"uid: {uid}\n"
+        f"token: {token}\n\n"
+        "If you did not create this account, you can ignore this email.\n"
+    )
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user.email],
+        fail_silently=False,
+    )
+
+class EmailVerificationSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate(self, attrs):
+        uid = attrs.get("uid")
+        token = attrs.get("token")
+
+        try:
+            user_id = force_str(
+                urlsafe_base64_decode(uid)
+            )
+
+            user = User.objects.get(
+                pk=user_id
+            )
+
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError(
+                {
+                    "detail": "Invalid email verification link."
+                }
+            )
+
+        if user.is_active:
+            raise serializers.ValidationError(
+                {
+                    "detail": "Account is already verified."
+                }
+            )
+
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError(
+                {
+                    "detail": "Invalid or expired email verification token."
+                }
+            )
+
+        attrs["user"] = user
+
+        return attrs
+
+    def save(self):
+        user = self.validated_data["user"]
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+
+class ResendEmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def save(self):
+        email = self.validated_data["email"]
+
+        user = User.objects.filter(
+            email=email
+        ).first()
+
+        if not user:
+            return
+
+        if user.is_active:
+            return
+
+        send_verification_email(user)
+
+

@@ -57,6 +57,8 @@ The CI pipeline:
 * Image upload for posts
 * Password reset via email
 * SMTP-based email configuration
+* Email verification for new accounts
+* Resend email verification endpoint
 
 ### Blog Functionality
 
@@ -189,6 +191,8 @@ docker compose -f docker-compose.prod.yml up --build
 | POST   | `/api/token/refresh/`                   | Refresh JWT access token          |
 | POST   | `/api/accounts/password-reset/`         | Password reset request            |
 | POST   | `/api/accounts/password-reset-confirm/` | Password reset confirm            |
+| POST   | `/api/accounts/verify-email/`           | Email verify                      |
+| POST   | `/api/accounts/resend-verification/`    | Resend vetification link          |
 | GET    | `/api/accounts/me/`                     | Get current authenticated user    |
 | GET    | `/api/accounts/profile/`                | Get current user profile          |
 | GET    | `/api/accounts/me/posts/`               | Get all of user's posts           |
@@ -665,7 +669,6 @@ Implemented:
 ## Future Improvements
 
 Planned improvements:
-* Add email verification
 * Add frontend with Django templates
 
 ---

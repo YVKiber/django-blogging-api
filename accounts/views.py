@@ -12,7 +12,8 @@ from blog.models import Bookmark, Post, Comment, Like
 from blog.serializers import BookmarkSerializer, PostSerializer
 from .models import UserProfile
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, UserProfileSerializer, \
-    UserDashboardSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
+    UserDashboardSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer, \
+    EmailVerificationSerializer, ResendEmailVerificationSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -179,6 +180,50 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         return Response(
             {
                 "detail": "Password has been reset successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+class EmailVerificationView(generics.GenericAPIView):
+    serializer_class = EmailVerificationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "detail": "Email has been verified successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+class ResendEmailVerificationView(generics.GenericAPIView):
+    serializer_class = ResendEmailVerificationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "detail": "If an unverified account with this email exists, a verification email has been sent."
             },
             status=status.HTTP_200_OK,
         )

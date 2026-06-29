@@ -83,6 +83,8 @@ class AccountsAPITests(APITestCase):
         self.assertTrue(
             User.objects.filter(username="newuser").exists()
         )
+        user = User.objects.get(username="newuser")
+        self.assertFalse(user.is_active)
 
     def test_user_registration_with_invalid_email_fails(self):
         response = self.client.post(
@@ -385,3 +387,123 @@ class AccountsAPITests(APITestCase):
         self.assertTrue(
             self.user.check_password("StrongPassword123!")
         )
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        FRONTEND_BASE_URL="http://frontend.test",
+    )
+    def test_user_registration_sends_verification_email(self):
+        response = self.client.post(
+            "/api/accounts/register/",
+            {
+                "username": "emailverifyuser",
+                "email": "emailverifyuser@example.com",
+                "password": "StrongPassword123!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(
+            username="emailverifyuser"
+        )
+
+        self.assertFalse(user.is_active)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Verify your email address", mail.outbox[0].subject)
+        self.assertIn("http://frontend.test/verify-email", mail.outbox[0].body)
+
+    def test_user_can_verify_email(self):
+        inactive_user = User.objects.create_user(
+            username="inactiveuser",
+            email="inactiveuser@example.com",
+            password="StrongPassword123!",
+            is_active=False,
+        )
+
+        uid = urlsafe_base64_encode(
+            force_bytes(str(inactive_user.pk))
+        )
+
+        token = default_token_generator.make_token(
+            inactive_user
+        )
+
+        response = self.client.post(
+        "/api/accounts/verify-email/",
+        {
+            "uid": uid,
+            "token": token,
+        },
+        format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        inactive_user.refresh_from_db()
+        self.assertTrue(inactive_user.is_active)
+
+    def test_email_verification_with_invalid_token_fails(self):
+        inactive_user = User.objects.create_user(
+            username="inactiveuser",
+            email="inactiveuser@example.com",
+            password="StrongPassword123!",
+            is_active=False,
+        )
+
+        uid = urlsafe_base64_encode(
+            force_bytes(str(inactive_user.pk))
+        )
+
+        response = self.client.post(
+            "/api/accounts/verify-email/",
+            {
+                "uid": uid,
+                "token": "invalid-token",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        inactive_user.refresh_from_db()
+        self.assertFalse(inactive_user.is_active)
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        FRONTEND_BASE_URL="http://frontend.test",
+    )
+    def test_resend_email_verification_sends_email_for_inactive_user(self):
+        inactive_user = User.objects.create_user(
+            username="inactiveuser",
+            email="inactiveuser@example.com",
+            password="StrongPassword123!",
+            is_active=False,
+        )
+
+        response = self.client.post(
+            "/api/accounts/resend-verification/",
+            {
+                "email": inactive_user.email,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Verify your email address", mail.outbox[0].subject)
+
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        FRONTEND_BASE_URL="http://frontend.test",
+    )
+    def test_resend_email_verification_for_active_user_does_not_send_email(self):
+        response = self.client.post(
+            "/api/accounts/resend-verification/",
+            {
+                "email": self.user.email,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(mail.outbox), 0)

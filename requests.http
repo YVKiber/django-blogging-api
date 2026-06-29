@@ -224,3 +224,32 @@ Content-Type: application/json
   "token": "PASTE_TOKEN_HERE",
   "new_password": "NewStrongPassword123!"
 }
+
+### Register user with email verification
+POST http://127.0.0.1:8000/api/accounts/register/
+Content-Type: application/json
+
+{
+  "username": "verifieduser",
+  "email": "verifieduser@example.com",
+  "password": "StrongPassword123!"
+}
+
+
+### Verify email
+POST http://127.0.0.1:8000/api/accounts/verify-email/
+Content-Type: application/json
+
+{
+  "uid": "Nw",
+  "token": "daxwwu-efbd1ebbfcd22d5ad03374e0c35bce27"
+}
+
+
+### Resend email verification
+POST http://127.0.0.1:8000/api/accounts/resend-verification/
+Content-Type: application/json
+
+{
+  "email": "verifieduser@example.com"
+}

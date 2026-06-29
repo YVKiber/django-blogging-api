@@ -2,10 +2,12 @@ from django.urls import path
 
 from .views import RegisterView, CurrentUserView, ChangePasswordView, UserProfileView, CurrentUserBookmarksView, \
     CurrentUserPostsView, CurrentUserDraftsView, CurrentUserDashboardView, PasswordResetRequestView, \
-    PasswordResetConfirmView
+    PasswordResetConfirmView, EmailVerificationView, ResendEmailVerificationView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
+    path('verify-email/',EmailVerificationView.as_view(), name='verify-email',),
+    path('resend-verification/', ResendEmailVerificationView.as_view(), name='resend-verification',),
     path('me/', CurrentUserView.as_view(), name='current-user'),
     path('me/posts/', CurrentUserPostsView.as_view(), name='current-user-posts'),
     path('me/drafts/', CurrentUserDraftsView.as_view(), name='current-user-drafts'),
