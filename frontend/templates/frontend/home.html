@@ -1,0 +1,111 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}Home · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="hero-content">
+            <span class="eyebrow">Modern Django Backend Project</span>
+
+            <h1>
+                A full-featured blogging platform built with Django and DRF.
+            </h1>
+
+            <p>
+                This project includes authentication, JWT API, email verification,
+                password reset, posts, comments, likes, bookmarks, image upload,
+                Docker, Gunicorn, PostgreSQL, and GitHub Actions CI.
+            </p>
+
+            <div class="hero-actions">
+                <a href="{% url 'frontend:posts-list' %}" class="btn btn-primary">
+                    Browse posts
+                </a>
+                <a href="/api/docs/" class="btn btn-secondary">
+                    View API docs
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-card">
+            <div class="metric-card">
+                <span class="metric-number">{{ posts_count }}</span>
+                <span class="metric-label">Published posts</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-number">{{ categories_count }}</span>
+                <span class="metric-label">Categories</span>
+            </div>
+
+            <div class="tech-list">
+                <span>Django</span>
+                <span>DRF</span>
+                <span>PostgreSQL</span>
+                <span>Docker</span>
+                <span>Gunicorn</span>
+                <span>CI</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container section-heading">
+        <div>
+            <span class="eyebrow">Latest content</span>
+            <h2>Recent posts</h2>
+        </div>
+
+        <a href="{% url 'frontend:posts-list' %}" class="text-link">
+            View all posts
+        </a>
+    </div>
+
+    <div class="container post-grid">
+        {% for post in latest_posts %}
+            <article class="post-card">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+                {% else %}
+                    <div class="post-card-placeholder">
+                        <span>No image</span>
+                    </div>
+                {% endif %}
+
+                <div class="post-card-body">
+                    {% if post.category %}
+                        <span class="category-badge">{{ post.category.name }}</span>
+                    {% endif %}
+
+                    <h3>
+                        <a href="{% url 'frontend:post-detail' post.pk %}">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        {{ post.content|truncatewords:24 }}
+                    </p>
+
+                    <div class="post-meta">
+                        <span>By {{ post.author.username }}</span>
+                        <span>{{ post.created_at|date:"M d, Y" }}</span>
+                    </div>
+
+                    <div class="post-stats">
+                        <span>{{ post.likes_total }} likes</span>
+                        <span>{{ post.comments_total }} comments</span>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No posts yet</h3>
+                <p>Create your first published post through the API or admin panel.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

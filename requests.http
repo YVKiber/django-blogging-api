@@ -241,8 +241,8 @@ POST http://127.0.0.1:8000/api/accounts/verify-email/
 Content-Type: application/json
 
 {
-  "uid": "Nw",
-  "token": "daxwwu-efbd1ebbfcd22d5ad03374e0c35bce27"
+  "uid": "OQ",
+  "token": "dayd0k-76693ca1e6538d457895e7903c6f80a2"
 }
 
 

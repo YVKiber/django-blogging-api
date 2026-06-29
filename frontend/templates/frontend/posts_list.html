@@ -1,0 +1,118 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}Posts · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Explore</span>
+        <h1>Published posts</h1>
+        <p>Search, filter by category, and read posts from the blogging platform.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <form method="get" class="filters-bar">
+            <div class="input-group">
+                <label for="q">Search</label>
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    placeholder="Search by title, content, or author"
+                    value="{{ search_query }}"
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">All categories</option>
+
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                            {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Apply filters
+            </button>
+
+            <a href="{% url 'frontend:posts-list' %}" class="btn btn-secondary">
+                Reset
+            </a>
+        </form>
+    </div>
+
+    <div class="container post-grid">
+        {% for post in posts %}
+            <article class="post-card">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+                {% else %}
+                    <div class="post-card-placeholder">
+                        <span>No image</span>
+                    </div>
+                {% endif %}
+
+                <div class="post-card-body">
+                    {% if post.category %}
+                        <span class="category-badge">{{ post.category.name }}</span>
+                    {% endif %}
+
+                    <h3>
+                        <a href="{% url 'frontend:post-detail' post.pk %}">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        {{ post.content|truncatewords:28 }}
+                    </p>
+
+                    <div class="post-meta">
+                        <span>By {{ post.author.username }}</span>
+                        <span>{{ post.created_at|date:"M d, Y" }}</span>
+                    </div>
+
+                    <div class="post-stats">
+                        <span>{{ post.likes_total }} likes</span>
+                        <span>{{ post.comments_total }} comments</span>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No posts found</h3>
+                <p>Try changing your search query or category filter.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="container pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                    Previous
+                </a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}Dashboard · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Account</span>
+        <h1>Your dashboard</h1>
+        <p>Welcome back, {{ request.user.username }}. Here is your blogging activity overview.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container dashboard-grid">
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ posts_count }}</span>
+            <span class="dashboard-label">Total posts</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ published_posts_count }}</span>
+            <span class="dashboard-label">Published posts</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ drafts_count }}</span>
+            <span class="dashboard-label">Drafts</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ comments_count }}</span>
+            <span class="dashboard-label">Comments written</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ likes_given_count }}</span>
+            <span class="dashboard-label">Likes given</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ likes_received_count }}</span>
+            <span class="dashboard-label">Likes received</span>
+        </article>
+
+        <article class="dashboard-card">
+            <span class="dashboard-number">{{ bookmarks_count }}</span>
+            <span class="dashboard-label">Bookmarks</span>
+        </article>
+    </div>
+</section>
+
+<section class="section section-muted">
+    <div class="container section-heading">
+        <div>
+            <span class="eyebrow">Recent activity</span>
+            <h2>Your recent posts</h2>
+        </div>
+    </div>
+
+    <div class="container table-card">
+        {% if recent_posts %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for post in recent_posts %}
+                        <tr>
+                            <td>
+                                {% if post.is_published %}
+                                    <a href="{% url 'frontend:post-detail' post.pk %}">
+                                        {{ post.title }}
+                                    </a>
+                                {% else %}
+                                    {{ post.title }}
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if post.category %}
+                                    {{ post.category.name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if post.is_published %}
+                                    <span class="status-badge status-published">Published</span>
+                                {% else %}
+                                    <span class="status-badge status-draft">Draft</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ post.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <h3>No posts yet</h3>
+                <p>You have not created any posts yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

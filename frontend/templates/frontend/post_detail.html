@@ -1,0 +1,35 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}{{ post.title }} · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<article class="post-detail">
+    <div class="container narrow">
+        <a href="{% url 'frontend:posts-list' %}" class="back-link">
+            ← Back to posts
+        </a>
+
+        {% if post.category %}
+            <span class="category-badge">{{ post.category.name }}</span>
+        {% endif %}
+
+        <h1>{{ post.title }}</h1>
+
+        <div class="post-detail-meta">
+            <span>By {{ post.author.username }}</span>
+            <span>{{ post.created_at|date:"M d, Y" }}</span>
+            <span>{{ post.likes_total }} likes</span>
+            <span>{{ post.comments_total }} comments</span>
+            <span>{{ post.bookmarks_total }} bookmarks</span>
+        </div>
+
+        {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image">
+        {% endif %}
+
+        <div class="post-content">
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+</article>
+{% endblock %}

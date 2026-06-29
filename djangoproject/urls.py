@@ -27,7 +27,8 @@ from django.conf.urls.static import static
 from djangoproject.views import health_check
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('master/', admin.site.urls),
+    path('', include('frontend.urls')),
     path('api/health/', health_check, name='health-check'),
     path('api/', include('blog.urls')),
     path('api/accounts/', include('accounts.urls')),
