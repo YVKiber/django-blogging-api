@@ -8,6 +8,19 @@
         <span class="eyebrow">Account</span>
         <h1>Your dashboard</h1>
         <p>Welcome back, {{ request.user.username }}. Here is your blogging activity overview.</p>
+        <div class="page-actions">
+            <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                Create post
+            </a>
+
+            <a href="{% url 'frontend:my-posts' %}" class="btn btn-secondary">
+                My posts
+            </a>
+
+            <a href="{% url 'frontend:my-drafts' %}" class="btn btn-secondary">
+                Drafts
+            </a>
+        </div>
     </div>
 </section>
 

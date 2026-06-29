@@ -1,0 +1,50 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}Delete post · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <span class="eyebrow">Danger zone</span>
+                <h1>Delete post</h1>
+                <p>
+                    Are you sure you want to delete this post?
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <div class="delete-preview">
+                <h2>{{ object.title }}</h2>
+
+                <p>
+                    {{ object.content|truncatewords:35 }}
+                </p>
+
+                {% if object.is_published %}
+                    <span class="status-badge status-published">
+                        Published
+                    </span>
+                {% else %}
+                    <span class="status-badge status-draft">
+                        Draft
+                    </span>
+                {% endif %}
+            </div>
+
+            <form method="post" class="form-actions">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-danger">
+                    Yes, delete
+                </button>
+
+                <a href="{% url 'frontend:my-posts' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

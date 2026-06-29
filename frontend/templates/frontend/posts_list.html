@@ -3,15 +3,20 @@
 {% block title %}Posts · Django Blogging Platform{% endblock %}
 
 {% block content %}
-<section class="page-hero">
-    <div class="container">
-        <span class="eyebrow">Explore</span>
-        <h1>Published posts</h1>
-        <p>Search, filter by category, and read posts from the blogging platform.</p>
-    </div>
-</section>
-
 <section class="section">
+    <div class="container section-heading">
+        <div>
+            <span class="eyebrow">Explore</span>
+            <h1 class="page-title">All published posts</h1>
+        </div>
+
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                Create post
+            </a>
+        {% endif %}
+    </div>
+
     <div class="container">
         <form method="get" class="filters-bar">
             <div class="input-group">
@@ -63,7 +68,9 @@
 
                 <div class="post-card-body">
                     {% if post.category %}
-                        <span class="category-badge">{{ post.category.name }}</span>
+                        <span class="category-badge">
+                            {{ post.category.name }}
+                        </span>
                     {% endif %}
 
                     <h3>
@@ -90,7 +97,7 @@
         {% empty %}
             <div class="empty-state">
                 <h3>No posts found</h3>
-                <p>Try changing your search query or category filter.</p>
+                <p>There are no published posts matching your filters.</p>
             </div>
         {% endfor %}
     </div>

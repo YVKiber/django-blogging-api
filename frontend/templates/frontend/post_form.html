@@ -1,0 +1,137 @@
+{% extends "frontend/base.html" %}
+
+{% block title %}
+    {% if object %}
+        Edit post · Django Blogging Platform
+    {% else %}
+        Create post · Django Blogging Platform
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container form-container-wide">
+        <div class="auth-card post-form-card">
+            <div class="auth-header">
+                <span class="eyebrow">Content editor</span>
+
+                {% if object %}
+                    <h1>Edit post</h1>
+                    <p>Update your post content, image, category, or publication status.</p>
+                {% else %}
+                    <h1>Create a new post</h1>
+                    <p>Write a new blog post and choose whether to publish it immediately or save it as a draft.</p>
+                {% endif %}
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="auth-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">
+                        {{ form.title.label }}
+                    </label>
+
+                    {{ form.title }}
+
+                    {% if form.title.errors %}
+                        <div class="field-errors">
+                            {% for error in form.title.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.content.id_for_label }}">
+                        {{ form.content.label }}
+                    </label>
+
+                    {{ form.content }}
+
+                    {% if form.content.errors %}
+                        <div class="field-errors">
+                            {% for error in form.content.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.category.id_for_label }}">
+                            {{ form.category.label }}
+                        </label>
+
+                        {{ form.category }}
+
+                        {% if form.category.errors %}
+                            <div class="field-errors">
+                                {% for error in form.category.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.image.id_for_label }}">
+                            {{ form.image.label }}
+                        </label>
+
+                        {{ form.image }}
+
+                        {% if form.image.errors %}
+                            <div class="field-errors">
+                                {% for error in form.image.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    {{ form.is_published }}
+
+                    <label for="{{ form.is_published.id_for_label }}">
+                        Publish this post
+                    </label>
+                </div>
+
+                {% if form.is_published.errors %}
+                    <div class="field-errors">
+                        {% for error in form.is_published.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        {% if object %}
+                            Save changes
+                        {% else %}
+                            Create post
+                        {% endif %}
+                    </button>
+
+                    <a href="{% url 'frontend:my-posts' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

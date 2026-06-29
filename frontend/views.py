@@ -3,16 +3,16 @@ from multiprocessing import context
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LogoutView
 from django.db.models import Q, Count
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 
 from blog.models import Post, Category, Comment, Like, Bookmark
-from frontend.forms import FrontendRegisterForm
+from frontend.forms import FrontendRegisterForm, FrontendPostForm
 
 
 class HomeView(TemplateView):
@@ -209,5 +209,161 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         return context
 
+class MyPostsView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = "frontend/my_posts.html"
+    context_object_name = "posts"
+    paginate_by = 6
+    login_url = reverse_lazy('frontend:login')
 
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user
+        ).select_related(
+            'category'
+        ).annotate(
+            likes_total=Count("likes"),
+            comments_total=Count("comments"),
+        ).order_by('-created_at')
+
+class MyDraftsView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = "frontend/my_drafts.html"
+    context_object_name = "posts"
+    paginate_by = 6
+    login_url = reverse_lazy("frontend:login")
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user,
+            is_published=False,
+        ).select_related(
+            'category'
+        ).annotate(
+            likes_total=Count("likes"),
+            comments_total=Count("comments"),
+        ).order_by('-updated_at')
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = FrontendPostForm
+    template_name = "frontend/post_form.html"
+    login_url = reverse_lazy("frontend:login")
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+
+        messages.success(
+            self.request,
+            "Post has been created successfully."
+        )
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        if self.object.is_published:
+            return reverse(
+                "frontend:post-detail",
+                kwargs={
+                    "pk": self.object.pk,
+                }
+            )
+
+        return reverse("frontend:my-drafts")
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = FrontendPostForm
+    template_name = "frontend/post_form.html"
+    login_url = reverse_lazy("frontend:login")
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user
+        )
+
+    def test_func(self):
+        post = self.get_object()
+
+        return post.author == self.request.user
+
+    def get_success_url(self):
+        if self.object.is_published:
+            return reverse(
+                "frontend:post-detail",
+                kwargs={
+                    "pk": self.object.pk,
+                }
+            )
+
+        return reverse("frontend:my-drafts")
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    template_name = "frontend/post_confirm_delete.html"
+    success_url = reverse_lazy("frontend:my-posts")
+    login_url = reverse_lazy("frontend:login")
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            author=self.request.user
+        )
+
+    def test_func(self):
+        post = self.get_object()
+
+        return post.author == self.request.user
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Post has been deleted successfully."
+        )
+
+        return super().form_valid(form)
+
+class PostPublishView(LoginRequiredMixin, View):
+    def post(self,request, pk):
+        post = get_object_or_404(
+            Post,
+            pk=pk,
+            author=request.user,
+        )
+        post.is_published = True
+        post.save(
+            update_fields=[
+                "is_published",
+                "updated_at",
+            ]
+        )
+
+        messages.success(
+            request,
+            "Post has been published successfully."
+        )
+
+        return redirect("frontend:my-posts")
+
+class PostUnpublishView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        post = get_object_or_404(
+            Post,
+            pk=pk,
+            author=request.user,
+        )
+
+        post.is_published = False
+        post.save(
+            update_fields=[
+                "is_published",
+                "updated_at",
+            ]
+        )
+
+        messages.success(
+            request,
+            "Post has been moved to drafts."
+        )
+
+        return redirect("frontend:my-drafts")
 

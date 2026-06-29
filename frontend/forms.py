@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.password_validation import validate_password
 
 from accounts.serializers import send_verification_email
+from blog.models import Post, Category
 
 User = get_user_model()
 
@@ -136,3 +137,54 @@ class FrontendRegisterForm(forms.ModelForm):
             send_verification_email(user)
 
         return user
+
+class FrontendPostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = [
+            'title',
+            'content',
+            'category',
+            'image',
+            'is_published',
+        ]
+
+        widgets = {
+            "title": forms.TextInput(
+                attrs={
+                    "class": "form-input",
+                    "placeholder": "Enter post title",
+                }
+            ),
+            "content": forms.Textarea(
+                attrs={
+                    "class": "form-textarea",
+                    "placeholder": "Write your post content here...",
+                    "rows": 10,
+                }
+            ),
+            "category": forms.Select(
+                attrs={
+                    "class": "form-input",
+                }
+            ),
+            "image": forms.ClearableFileInput(
+                attrs={
+                    "class": "form-file",
+                }
+            ),
+            "is_published": forms.CheckboxInput(
+                attrs={
+                    "class": "form-checkbox",
+                }
+            ),
+        }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+            self.fields["category"].queryset = Category.objects.all().order_by("name")
+            self.fields["category"].empty_label = "Select category"
+
+            self.fields["image"].required = False
+            self.fields["category"].required = True

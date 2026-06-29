@@ -1,10 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "frontend/base.html" %}
 
-</body>
-</html>
+{% block title %}My Drafts · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Drafts</span>
+        <h1>My drafts</h1>
+        <p>Review, edit, publish, or delete your unpublished posts.</p>
+
+        <div class="page-actions">
+            <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                Create new post
+            </a>
+
+            <a href="{% url 'frontend:my-posts' %}" class="btn btn-secondary">
+                All my posts
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container management-list">
+        {% for post in posts %}
+            <article class="management-card">
+                <div class="management-main">
+                    <div>
+                        {% if post.category %}
+                            <span class="category-badge">
+                                {{ post.category.name }}
+                            </span>
+                        {% endif %}
+
+                        <h2>{{ post.title }}</h2>
+
+                        <p>
+                            {{ post.content|truncatewords:30 }}
+                        </p>
+
+                        <div class="post-meta">
+                            <span>Updated {{ post.updated_at|date:"M d, Y" }}</span>
+                            <span class="status-badge status-draft">Draft</span>
+                            <span>{{ post.comments_total }} comments</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="management-actions">
+                    <a href="{% url 'frontend:post-edit' post.pk %}" class="btn btn-secondary">
+                        Edit
+                    </a>
+
+                    <form method="post" action="{% url 'frontend:post-publish' post.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">
+                            Publish
+                        </button>
+                    </form>
+
+                    <a href="{% url 'frontend:post-delete' post.pk %}" class="btn btn-danger">
+                        Delete
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>No drafts</h3>
+                <p>You do not have any draft posts at the moment.</p>
+
+                <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                    Create post
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="container pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

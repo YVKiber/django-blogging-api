@@ -1,10 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "frontend/base.html" %}
 
-</body>
-</html>
+{% block title %}My Posts · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Content management</span>
+        <h1>My posts</h1>
+        <p>Manage all your published posts and drafts from one place.</p>
+
+        <div class="page-actions">
+            <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                Create new post
+            </a>
+
+            <a href="{% url 'frontend:my-drafts' %}" class="btn btn-secondary">
+                View drafts
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container management-list">
+        {% for post in posts %}
+            <article class="management-card">
+                <div class="management-main">
+                    <div>
+                        {% if post.category %}
+                            <span class="category-badge">
+                                {{ post.category.name }}
+                            </span>
+                        {% endif %}
+
+                        <h2>
+                            {% if post.is_published %}
+                                <a href="{% url 'frontend:post-detail' post.pk %}">
+                                    {{ post.title }}
+                                </a>
+                            {% else %}
+                                {{ post.title }}
+                            {% endif %}
+                        </h2>
+
+                        <p>
+                            {{ post.content|truncatewords:30 }}
+                        </p>
+
+                        <div class="post-meta">
+                            <span>{{ post.created_at|date:"M d, Y" }}</span>
+
+                            {% if post.is_published %}
+                                <span class="status-badge status-published">
+                                    Published
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-draft">
+                                    Draft
+                                </span>
+                            {% endif %}
+
+                            <span>{{ post.likes_total }} likes</span>
+                            <span>{{ post.comments_total }} comments</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="management-actions">
+                    <a href="{% url 'frontend:post-edit' post.pk %}" class="btn btn-secondary">
+                        Edit
+                    </a>
+
+                    {% if post.is_published %}
+                        <form method="post" action="{% url 'frontend:post-unpublish' post.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary">
+                                Unpublish
+                            </button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'frontend:post-publish' post.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                Publish
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <a href="{% url 'frontend:post-delete' post.pk %}" class="btn btn-danger">
+                        Delete
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>You have no posts yet</h3>
+                <p>Create your first post and choose whether to publish it or save it as a draft.</p>
+
+                <a href="{% url 'frontend:post-create' %}" class="btn btn-primary">
+                    Create post
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="container pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
