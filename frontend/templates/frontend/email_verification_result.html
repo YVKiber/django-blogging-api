@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "frontend/base.html" %}
 
-</body>
-</html>
+{% block title %}Email verification · Django Blogging Platform{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container auth-container">
+        <div class="auth-card result-card">
+            <div class="result-icon {% if success %}result-success{% else %}result-error{% endif %}">
+                {% if success %}
+                    ✓
+                {% else %}
+                    !
+                {% endif %}
+            </div>
+
+            <div class="auth-header">
+                <span class="eyebrow">Email verification</span>
+                <h1>{{ title }}</h1>
+                <p>{{ message }}</p>
+            </div>
+
+            <div class="form-actions">
+                {% if success %}
+                    <a href="{% url 'frontend:login' %}" class="btn btn-primary">
+                        Go to login
+                    </a>
+                {% else %}
+                    <a href="{% url 'frontend:resend-verification' %}" class="btn btn-primary">
+                        Resend verification email
+                    </a>
+
+                    <a href="{% url 'frontend:home' %}" class="btn btn-secondary">
+                        Back to home
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

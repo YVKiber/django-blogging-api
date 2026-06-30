@@ -12,6 +12,8 @@ from rest_framework import serializers, generics
 from django.conf import settings
 from .models import UserProfile
 
+User = get_user_model()
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
@@ -101,8 +103,6 @@ class UserDashboardSerializer(serializers.Serializer):
     likes_given_count = serializers.IntegerField()
     likes_received_count = serializers.IntegerField()
     bookmarks_count = serializers.IntegerField()
-
-User = get_user_model()
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()

@@ -188,3 +188,84 @@ class FrontendPostForm(forms.ModelForm):
 
             self.fields["image"].required = False
             self.fields["category"].required = True
+
+class ResendVerificationForm(forms.Form):
+    email = forms.EmailField(
+        label="Email address",
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Enter your email address",
+                "autocomplete": "email",
+            }
+        ),
+    )
+    def save(self):
+        email = self.cleaned_data["email"]
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            return
+
+        if user.is_active:
+            return
+
+        send_verification_email(user)
+
+class PasswordResetRequestFrontendForm(forms.Form):
+    email = forms.EmailField(
+        label="Email address",
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Enter your email address",
+                "autocomplete": "email",
+            }
+        ),
+    )
+
+class PasswordResetConfirmFrontendForm(forms.Form):
+    new_password = forms.CharField(
+        label="New password",
+        min_length=8,
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Create a strong password",
+                "autocomplete": "new-password",
+            }
+        ),
+    )
+
+    new_password_confirm = forms.CharField(
+        label="Confirm password",
+        min_length=8,
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Repeat your password",
+                "autocomplete": "new-password",
+            }
+        ),
+    )
+
+    def clean_new_password(self):
+        password = self.cleaned_data.get("new_password")
+
+        validate_password(password)
+
+        return password
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        new_password = cleaned_data.get("new_password")
+        new_password_confirm = cleaned_data.get("new_password_confirm")
+
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            self.add_error(
+                "new_password_confirm",
+                "Passwords do not match."
+            )
+        return cleaned_data

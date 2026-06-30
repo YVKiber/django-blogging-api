@@ -15,6 +15,12 @@ urlpatterns = [
     path('logout/', views.FrontendLogoutView.as_view(), name='logout'),
     path('register/', views.FrontendRegisterView.as_view(), name='register'),
 
+    path('verify-email/', views.VerifyEmailView.as_view(), name='verify-email'),
+    path('resend-verification/', views.ResendVerificationView.as_view(), name='resend-verification'),
+
+    path('password-reset/', views.PasswordResetRequestFrontendView.as_view(), name='password-reset'),
+    path('password-reset-confirm/', views.PasswordResetConfirmFrontendView.as_view(), name='password-reset-confir'),
+
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
 
     path('my-posts/', views.MyPostsView.as_view(), name='my-posts'),

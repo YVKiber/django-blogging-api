@@ -68,7 +68,12 @@
 
                 <p>
                     Forgot your password?
-                    <a href="#">Reset password</a>
+                    <a href="{% url 'frontend:password-reset' %}">Reset password</a>
+                </p>
+                
+                <p>
+                    Need a new verification email?
+                    <a href="{% url 'frontend:resend-verification' %}">Resend verification</a>
                 </p>
             </div>
         </div>

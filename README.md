@@ -59,6 +59,16 @@ The CI pipeline:
 * SMTP-based email configuration
 * Email verification for new accounts
 * Resend email verification endpoint
+ 
+### Frontend authentication flows
+
+The web frontend supports:
+
+* User registration with email verification
+* Resending verification emails
+* Login and logout using Django sessions
+* Password reset request
+* Password reset confirmation through emailed links
 
 ### Blog Functionality
 
@@ -184,22 +194,22 @@ docker compose -f docker-compose.prod.yml up --build
 
 ### Authentication and Accounts
 
-| Method | Endpoint                                | Description                       |
-|--------|-----------------------------------------|-----------------------------------|
-| POST   | `/api/accounts/register/`               | Register a new user               |
-| POST   | `/api/token/`                           | Get JWT access and refresh tokens |
-| POST   | `/api/token/refresh/`                   | Refresh JWT access token          |
-| POST   | `/api/accounts/password-reset/`         | Password reset request            |
-| POST   | `/api/accounts/password-reset-confirm/` | Password reset confirm            |
-| POST   | `/api/accounts/verify-email/`           | Email verify                      |
-| POST   | `/api/accounts/resend-verification/`    | Resend vetification link          |
-| GET    | `/api/accounts/me/`                     | Get current authenticated user    |
-| GET    | `/api/accounts/profile/`                | Get current user profile          |
-| GET    | `/api/accounts/me/posts/`               | Get all of user's posts           |
-| GET    | `/api/accounts/me/dashboard/`           | Get user's dashboard              |
-| GET    | `/api/accounts/me/drafts/`              | Get all of user's drafts          |
-| PATCH  | `/api/accounts/profile/`                | Update current user profile       |
-| POST   | `/api/accounts/change-password/`        | Change user password              |
+| Method | Endpoint                                                   | Description                       |
+|--------|------------------------------------------------------------|-----------------------------------|
+| POST   | `/api/accounts/register/`                                  | Register a new user               |
+| POST   | `/api/token/`                                              | Get JWT access and refresh tokens |
+| POST   | `/api/token/refresh/`                                      | Refresh JWT access token          |
+| POST   | `/api/accounts/password-reset/`                            | Password reset request            |
+| POST   | `/api/accounts/password-reset-confirm/?uid=...&token=.../` | Password reset confirm            |
+| POST   | `/api/accounts//verify-email/?uid=...&token=.../`          | Email verify                      |
+| POST   | `/api/accounts/resend-verification/`                       | Resend vetification link          |
+| GET    | `/api/accounts/me/`                                        | Get current authenticated user    |
+| GET    | `/api/accounts/profile/`                                   | Get current user profile          |
+| GET    | `/api/accounts/me/posts/`                                  | Get all of user's posts           |
+| GET    | `/api/accounts/me/dashboard/`                              | Get user's dashboard              |
+| GET    | `/api/accounts/me/drafts/`                                 | Get all of user's drafts          |
+| PATCH  | `/api/accounts/profile/`                                   | Update current user profile       |
+| POST   | `/api/accounts/change-password/`                           | Change user password              |
 
 ### Posts
 
@@ -664,13 +674,7 @@ Implemented:
 * Post bookmarks system
 * Draft and publish system
 * User dashboard statistics endpoint
----
-
-## Future Improvements
-
-Planned improvements:
-* Add frontend with Django templates
-
+* 
 ---
 
 ## Author
